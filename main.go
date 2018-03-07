@@ -27,15 +27,14 @@ func service() *ec2.EC2 {
 
 }
 
-func main() {
-
-	svc := service()
-	//svc := ec2.New(session.New())
+//func getTags(*ec2.EC2) {
+func getTags() []string {
 	params := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
-				Name:   aws.String("tag:Backup"),
-				Values: []*string{aws.String("/dev/sdg")},
+				Name: aws.String("tag:Test"),
+				Values: []*string{
+					aws.String("daily"), aws.String("weekly"), aws.String("monthly")},
 			},
 		},
 	}
@@ -45,11 +44,27 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	for idx, res := range resp.Reservations {
-		fmt.Println(" > Reservation Id", *res.ReservationId, " Num Instance: ", len(res.Instances))
-		for _, inst := range resp.Reservations[idx].Instances {
-			fmt.Println("   - Iantance Id: ", *inst.InstanceId)
+	var iIds []string
+
+	//for r, _ := range resp.Reservations {
+	for r := range resp.Reservations {
+		for _, inst := range resp.Reservations[r].Instances {
+			fmt.Println("Instance Id: ", *inst.InstanceId)
+			iIds = append(iIds, *inst.InstanceId)
 		}
+	}
+
+	return iIds
+}
+
+func main() {
+
+	svc := service()
+	_ = svc
+	// iIds is a pointer to a slice of string
+	iIds := getTags()
+	for i := range iIds {
+		fmt.Println("Instance Id,", i)
 	}
 
 }
