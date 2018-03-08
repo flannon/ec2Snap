@@ -1,0 +1,31 @@
+Instance Id:  i-054afcb31f1c2aa1e
+Type: []string
+Instance Id, i-054afcb31f1c2aa1e
+{
+  BlockDeviceMappings: [{
+      DeviceName: "/dev/sda1",
+      Ebs: {
+        AttachTime: 2018-03-06 19:26:10 +0000 UTC,
+        DeleteOnTermination: true,
+        Status: "attached",
+        VolumeId: "vol-07e0202a2f6de7219"
+      }
+    },{
+      DeviceName: "/dev/sdf",
+      Ebs: {
+        AttachTime: 2018-03-06 19:26:10 +0000 UTC,
+        DeleteOnTermination: true,
+        Status: "attached",
+        VolumeId: "vol-0b51e54cc0292538a"
+      }
+    },{
+      DeviceName: "/dev/sdg",
+      Ebs: {
+        AttachTime: 2018-03-06 19:26:10 +0000 UTC,
+        DeleteOnTermination: true,
+        Status: "attached",
+        VolumeId: "vol-042f8339452427641"
+      }
+    }],
+  InstanceId: "i-054afcb31f1c2aa1e"
+}
