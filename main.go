@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
@@ -57,14 +59,50 @@ func getTags() []string {
 	return iIds
 }
 
+func getBDev(iIds []string) {
+
+	//for _, i := range iIds {
+	//	fmt.Println("getBdev:", i)
+	//}
+	for _, i := range iIds {
+		// https://doco//s.aws.amazon.com/sdk-for-go/api/service/ec2/#EC2.DescribeInstanceAttribute
+		// https://github.com/terraform-providers/terraform-provider-aws/blob/master/aws/resource_aws_instance.go
+
+		input := &ec2.DescribeInstanceAttributeInput{
+			Attribute:  aws.String("blockDeviceMapping"),
+			InstanceId: aws.String(i),
+		}
+
+		result, err := svc.DescribeInstanceAttribute(input)
+		if err != nil {
+			if aerr, ok := err.(awserr.Error); ok {
+				switch aerr.Code() {
+				default:
+					fmt.Println(aerr.Error())
+				}
+			} else {
+				// Print the error, cast err to awserr.Error to get the code and
+				// Message from and error
+				fmt.Println(err.Error())
+			}
+			return
+		}
+		fmt.Println(result)
+	} // !- for id
+
+} // !- getBdev()
+
 func main() {
 
 	svc := service()
 	_ = svc
 	// iIds is a pointer to a slice of string
 	iIds := getTags()
-	for i := range iIds {
+	fmt.Println("Type:", reflect.TypeOf(iIds))
+	for _, i := range iIds {
 		fmt.Println("Instance Id,", i)
+		//fmt.Println("Instance e,", e)
 	}
+	getBDev(iIds)
 
 }
