@@ -1,0 +1,383 @@
+[
+  {
+    "sha": "7fd9e86ea694bcfc3cb8472d43c93626febd45cd",
+    "commit": {
+      "author": {
+        "name": "Nicolas Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-03-06T19:55:16Z"
+      },
+      "committer": {
+        "name": "Nicolas Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-03-06T22:35:33Z"
+      },
+      "message": "Make limit/2 more efficient\n\nContributed by @pkoppstein.",
+      "tree": {
+        "sha": "72a4dc16a29b0ba50b98ed9d054f02f3af66b29f",
+        "url": "https://api.github.com/repos/stedolan/jq/git/trees/72a4dc16a29b0ba50b98ed9d054f02f3af66b29f"
+      },
+      "url": "https://api.github.com/repos/stedolan/jq/git/commits/7fd9e86ea694bcfc3cb8472d43c93626febd45cd",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/stedolan/jq/commits/7fd9e86ea694bcfc3cb8472d43c93626febd45cd",
+    "html_url": "https://github.com/stedolan/jq/commit/7fd9e86ea694bcfc3cb8472d43c93626febd45cd",
+    "comments_url": "https://api.github.com/repos/stedolan/jq/commits/7fd9e86ea694bcfc3cb8472d43c93626febd45cd/comments",
+    "author": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "e113c67d5116e52e536fae8f2d52516bd2cefa31",
+        "url": "https://api.github.com/repos/stedolan/jq/commits/e113c67d5116e52e536fae8f2d52516bd2cefa31",
+        "html_url": "https://github.com/stedolan/jq/commit/e113c67d5116e52e536fae8f2d52516bd2cefa31"
+      }
+    ]
+  },
+  {
+    "sha": "e113c67d5116e52e536fae8f2d52516bd2cefa31",
+    "commit": {
+      "author": {
+        "name": "Nicolas Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-03-06T17:28:38Z"
+      },
+      "committer": {
+        "name": "Nicolas Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-03-06T17:29:13Z"
+      },
+      "message": "limit/2 evals exp one time too many",
+      "tree": {
+        "sha": "b3407018b90fa852d8dbb19a1914c8142641f382",
+        "url": "https://api.github.com/repos/stedolan/jq/git/trees/b3407018b90fa852d8dbb19a1914c8142641f382"
+      },
+      "url": "https://api.github.com/repos/stedolan/jq/git/commits/e113c67d5116e52e536fae8f2d52516bd2cefa31",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/stedolan/jq/commits/e113c67d5116e52e536fae8f2d52516bd2cefa31",
+    "html_url": "https://github.com/stedolan/jq/commit/e113c67d5116e52e536fae8f2d52516bd2cefa31",
+    "comments_url": "https://api.github.com/repos/stedolan/jq/commits/e113c67d5116e52e536fae8f2d52516bd2cefa31/comments",
+    "author": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "bf88c73c20ff1642aa2566ae67df18ca5b4b63ab",
+        "url": "https://api.github.com/repos/stedolan/jq/commits/bf88c73c20ff1642aa2566ae67df18ca5b4b63ab",
+        "html_url": "https://github.com/stedolan/jq/commit/bf88c73c20ff1642aa2566ae67df18ca5b4b63ab"
+      }
+    ]
+  },
+  {
+    "sha": "bf88c73c20ff1642aa2566ae67df18ca5b4b63ab",
+    "commit": {
+      "author": {
+        "name": "rain1",
+        "email": "rain1@airmail.cc",
+        "date": "2018-03-01T19:16:11Z"
+      },
+      "committer": {
+        "name": "Nico Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-03-01T20:33:47Z"
+      },
+      "message": "src/main.c: fix issue #1587 by using jv_dumpf in the raw-output and ascii-output case. retain fwrite in the raw-output case.",
+      "tree": {
+        "sha": "06ce97e4a98db06c5c167a918ef6f18c3f9d6870",
+        "url": "https://api.github.com/repos/stedolan/jq/git/trees/06ce97e4a98db06c5c167a918ef6f18c3f9d6870"
+      },
+      "url": "https://api.github.com/repos/stedolan/jq/git/commits/bf88c73c20ff1642aa2566ae67df18ca5b4b63ab",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/stedolan/jq/commits/bf88c73c20ff1642aa2566ae67df18ca5b4b63ab",
+    "html_url": "https://github.com/stedolan/jq/commit/bf88c73c20ff1642aa2566ae67df18ca5b4b63ab",
+    "comments_url": "https://api.github.com/repos/stedolan/jq/commits/bf88c73c20ff1642aa2566ae67df18ca5b4b63ab/comments",
+    "author": {
+      "login": "rain-1",
+      "id": 17393876,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/17393876?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/rain-1",
+      "html_url": "https://github.com/rain-1",
+      "followers_url": "https://api.github.com/users/rain-1/followers",
+      "following_url": "https://api.github.com/users/rain-1/following{/other_user}",
+      "gists_url": "https://api.github.com/users/rain-1/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/rain-1/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/rain-1/subscriptions",
+      "organizations_url": "https://api.github.com/users/rain-1/orgs",
+      "repos_url": "https://api.github.com/users/rain-1/repos",
+      "events_url": "https://api.github.com/users/rain-1/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/rain-1/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "ae11f111a5d18604c7001e48c3d6e4a5e73fed64",
+        "url": "https://api.github.com/repos/stedolan/jq/commits/ae11f111a5d18604c7001e48c3d6e4a5e73fed64",
+        "html_url": "https://github.com/stedolan/jq/commit/ae11f111a5d18604c7001e48c3d6e4a5e73fed64"
+      }
+    ]
+  },
+  {
+    "sha": "ae11f111a5d18604c7001e48c3d6e4a5e73fed64",
+    "commit": {
+      "author": {
+        "name": "Riley Avron",
+        "email": "riley.avron@gmail.com",
+        "date": "2018-02-23T19:31:14Z"
+      },
+      "committer": {
+        "name": "Nico Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-02-23T20:10:47Z"
+      },
+      "message": "Fix \"provides\" typo",
+      "tree": {
+        "sha": "70c8b6f8d920c556b47b4d6ce3b63487446d0ceb",
+        "url": "https://api.github.com/repos/stedolan/jq/git/trees/70c8b6f8d920c556b47b4d6ce3b63487446d0ceb"
+      },
+      "url": "https://api.github.com/repos/stedolan/jq/git/commits/ae11f111a5d18604c7001e48c3d6e4a5e73fed64",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/stedolan/jq/commits/ae11f111a5d18604c7001e48c3d6e4a5e73fed64",
+    "html_url": "https://github.com/stedolan/jq/commit/ae11f111a5d18604c7001e48c3d6e4a5e73fed64",
+    "comments_url": "https://api.github.com/repos/stedolan/jq/commits/ae11f111a5d18604c7001e48c3d6e4a5e73fed64/comments",
+    "author": {
+      "login": "ravron",
+      "id": 5354796,
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5354796?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ravron",
+      "html_url": "https://github.com/ravron",
+      "followers_url": "https://api.github.com/users/ravron/followers",
+      "following_url": "https://api.github.com/users/ravron/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ravron/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ravron/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ravron/subscriptions",
+      "organizations_url": "https://api.github.com/users/ravron/orgs",
+      "repos_url": "https://api.github.com/users/ravron/repos",
+      "events_url": "https://api.github.com/users/ravron/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ravron/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "2ce1e323df8291e4d2fdb32e4bb85e525309c987",
+        "url": "https://api.github.com/repos/stedolan/jq/commits/2ce1e323df8291e4d2fdb32e4bb85e525309c987",
+        "html_url": "https://github.com/stedolan/jq/commit/2ce1e323df8291e4d2fdb32e4bb85e525309c987"
+      }
+    ]
+  },
+  {
+    "sha": "2ce1e323df8291e4d2fdb32e4bb85e525309c987",
+    "commit": {
+      "author": {
+        "name": "David Fetter",
+        "email": "david@fetter.org",
+        "date": "2017-10-28T14:51:59Z"
+      },
+      "committer": {
+        "name": "Nico Williams",
+        "email": "nico@cryptonector.com",
+        "date": "2018-02-20T20:54:21Z"
+      },
+      "message": "Change backticks to the more legible $()",
+      "tree": {
+        "sha": "0dbc271a58d526a47561fc889cb057e8d233b6b6",
+        "url": "https://api.github.com/repos/stedolan/jq/git/trees/0dbc271a58d526a47561fc889cb057e8d233b6b6"
+      },
+      "url": "https://api.github.com/repos/stedolan/jq/git/commits/2ce1e323df8291e4d2fdb32e4bb85e525309c987",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/stedolan/jq/commits/2ce1e323df8291e4d2fdb32e4bb85e525309c987",
+    "html_url": "https://github.com/stedolan/jq/commit/2ce1e323df8291e4d2fdb32e4bb85e525309c987",
+    "comments_url": "https://api.github.com/repos/stedolan/jq/commits/2ce1e323df8291e4d2fdb32e4bb85e525309c987/comments",
+    "author": {
+      "login": "davidfetter",
+      "id": 143953,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/143953?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/davidfetter",
+      "html_url": "https://github.com/davidfetter",
+      "followers_url": "https://api.github.com/users/davidfetter/followers",
+      "following_url": "https://api.github.com/users/davidfetter/following{/other_user}",
+      "gists_url": "https://api.github.com/users/davidfetter/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/davidfetter/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/davidfetter/subscriptions",
+      "organizations_url": "https://api.github.com/users/davidfetter/orgs",
+      "repos_url": "https://api.github.com/users/davidfetter/repos",
+      "events_url": "https://api.github.com/users/davidfetter/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/davidfetter/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "nicowilliams",
+      "id": 604851,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/604851?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/nicowilliams",
+      "html_url": "https://github.com/nicowilliams",
+      "followers_url": "https://api.github.com/users/nicowilliams/followers",
+      "following_url": "https://api.github.com/users/nicowilliams/following{/other_user}",
+      "gists_url": "https://api.github.com/users/nicowilliams/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/nicowilliams/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/nicowilliams/subscriptions",
+      "organizations_url": "https://api.github.com/users/nicowilliams/orgs",
+      "repos_url": "https://api.github.com/users/nicowilliams/repos",
+      "events_url": "https://api.github.com/users/nicowilliams/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/nicowilliams/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "68d0048148748493dc2732a8b3a2251767f34d2d",
+        "url": "https://api.github.com/repos/stedolan/jq/commits/68d0048148748493dc2732a8b3a2251767f34d2d",
+        "html_url": "https://github.com/stedolan/jq/commit/68d0048148748493dc2732a8b3a2251767f34d2d"
+      }
+    ]
+  }
+]
+

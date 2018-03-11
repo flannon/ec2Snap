@@ -1,6 +1,3 @@
-Instance Id:  i-054afcb31f1c2aa1e
-Type: []string
-Instance Id, i-054afcb31f1c2aa1e
 {
   BlockDeviceMappings: [{
       DeviceName: "/dev/sda1",
