@@ -51,46 +51,26 @@ func getTaggedInstances(t string) []*ec2.Instance {
 
 	var taggedInstances []*ec2.Instance
 
+	// Reservations can have one or more taggedInstances,
+	// so we need to loop through it twice, first getting a Reservation
+	// then getting instances for the reservation.
 	for r := range resp.Reservations {
 		for _, inst := range resp.Reservations[r].Instances {
-
 			if inst != nil {
-				//fmt.Println("inst:", reflect.TypeOf(inst))
-				//instance := inst
-				//_ = instance
 				taggedInstances = append(taggedInstances, inst)
 			}
 		}
 	}
 	return taggedInstances
-}
-
-// !-getTaggedInstances()
-
-// BlockDevice containes all fields necessary
-// to take a snapshot
-type BlockDevice struct {
-	InstanceId string
-	DeviceName string
-	VolumeId   string
-}
+} // !-getTaggedInstances()
 
 // Get block devices from instance
-//func readBlockDeviceFromInstance(instance []taggedInstance) {
+//!+readBlockDeviceFromInstance()
 func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}, error) {
 
 	blockDevices := make(map[string]interface{})
 	blockDevices["ebs"] = make([]map[string]interface{}, 0)
 	blockDevices["root"] = nil
-
-	//func readBlockDeviceFromInstance(instances map[string]*ec2.Instance) {
-
-	//for id, instance := range instances {
-	//	fmt.Println("Instance id:", id)
-	//	fmt.Println("*ec2.Instance")
-	//	fmt.Println("Instance id from instance:", *instance.InstanceId)
-
-	//}
 
 	instanceBlockDevices := make(map[string]*ec2.InstanceBlockDeviceMapping)
 	for _, bd := range instance.BlockDeviceMappings {
@@ -110,14 +90,13 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 		fmt.Println("volID:", volID)
 	}
 
-	// Call DescribeVolumes to get vol size and
+	// Call DescribeVolumes to get vol size
 	volResp, err := svc.DescribeVolumes(&ec2.DescribeVolumesInput{
 		VolumeIds: volIDs,
 	})
 	if err != nil {
 		return nil, err
 	}
-	//fmt.Println("volResp:", volResp)
 
 	for _, vol := range volResp.Volumes {
 		instanceBd := instanceBlockDevices[*vol.VolumeId]
@@ -137,7 +116,6 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 		if vol.Iops != nil {
 			bd["iops"] = *vol.Iops
 		}
-
 		if blockDeviceIsRoot(instanceBd, instance) {
 			//blockDevices["root"] = bd
 			blockDevices["root"] = bd
@@ -154,77 +132,20 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 
 			blockDevices["ebs"] = append(blockDevices["ebs"].([]map[string]interface{}), bd)
 		}
-
 	}
 
-	//return nil, nil
 	return blockDevices, nil
-	/*
 
-		fmt.Println("instance", instance)
+} //!- readBlockDeviceFromInstance()
 
-		bd := BlockDevice{
-			//InstanceId: *instance.InstanceId,
-			InstanceId: instance,
-		}
-
-		input := &ec2.DescribeInstanceAttributeInput{
-			Attribute:  aws.String("blockDeviceMapping"),
-			InstanceId: aws.String(instance),
-			//InstanceId: aws.String(*instance.InstanceId),
-		}
-
-		result, err := svc.DescribeInstanceAttribute(input)
-		fmt.Println("reault:", reflect.TypeOf(result))
-		if err != nil {
-			if aerr, ok := err.(awserr.Error); ok {
-				switch aerr.Code() {
-				default:
-					fmt.Println(aerr.Error())
-				}
-			} else {
-				// Print the error, cast err to awserr.Error to get the code and
-				// Message from and error
-				fmt.Println(err.Error())
-			}
-			return
-		}
-		fmt.Println("Type of result.BockDeviceMappings.BlockDeviceMappings:", reflect.TypeOf(result.BlockDeviceMappings))
-		//fmt.Println(result)
-		fmt.Println(result.BlockDeviceMappings)
-		//fmt.Println(result.BlockDeviceMappings.DeviceName)
-
-		var instanceBlockDevices []*ec2.InstanceBlockDeviceMapping
-		instanceBlockDevices = result.BlockDeviceMappings
-		//instanceBlockDevices := make(map[string]*ec2.InstanceBlockDeviceMapping)
-		for i, bd := range instanceBlockDevices {
-			//for i, bd := range instance.BlockDevicesMappings {
-			if bd.Ebs != nil {
-				fmt.Println("index:", i, "Block Device:", bd)
-				//instanceBlockDevices[*bd.Ebs.VolumeId] = bd
-				fmt.Println("index:", i, "Block Device:", bd)
-			}
-			//fmt.Println("index:", i)
-			////fmt.Println(bd)
-		}
-
-		// make a slice of BlockDevice and add all volumes to be snapshotted
-		fmt.Println("InstanceId:", bd.InstanceId)
-		//fmt.Println("InstanceId:", InstanceId)
-		fmt.Println("DeviceName:")
-		fmt.Println("VolumeId:")
-
-		//} // !- for id
-
-	*/
-} // !- readBlockDeviceFromInstance()
-
+//!+blockDeviceIsRoot()
 func blockDeviceIsRoot(bd *ec2.InstanceBlockDeviceMapping, instance *ec2.Instance) bool {
 	return bd.DeviceName != nil &&
 		instance.RootDeviceName != nil &&
 		*bd.DeviceName == *instance.RootDeviceName
-}
+} // !-blockDeviceIsRoot()
 
+//!+main
 func main() {
 
 	svc := service()
@@ -240,18 +161,4 @@ func main() {
 		readBlockDeviceFromInstance(i)
 	}
 
-	//fmt.Println("Type:", reflect.TypeOf(instances))
-	//fmt.Println("instances:", instances)
-
-	/*
-		for _, i := range instances {
-			//	fmt.Println("Instance Id", i)
-
-			//readBlockDeviceFromInstance(i)
-			fmt.Println(i)
-		}
-	*/
-
-	//readBlockDeviceFromInstance(instances)
-
-}
+} //!-main
