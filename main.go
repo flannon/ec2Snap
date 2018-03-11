@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -33,16 +32,7 @@ func service() *ec2.EC2 {
 }
 
 // Get list of tagged instances
-
-//type taggedInstance struct {
-//	instanceId string
-//	instance   *ec2.Instance
-//}
-
-//func getTaggedInstances() []string {
-//func getTaggedInstances(t string) []*ec2.Instance {
-//func getTaggedInstances(t string) []taggedInstance {
-//func getTaggedInstances(t string) map[string]*ec2.Instance {
+// !+getTaggedInstances()
 func getTaggedInstances(t string) []*ec2.Instance {
 	params := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
@@ -54,67 +44,28 @@ func getTaggedInstances(t string) []*ec2.Instance {
 		},
 	}
 	resp, err := svc.DescribeInstances(params)
-	//fmt.Println("resp resp:", resp)
-	////fmt.Println("resp:", reflect.TypeOf(resp))
 	if err != nil {
 		fmt.Println("error listing instances in", err.Error())
 		log.Fatal(err.Error())
 	}
 
-	//var instances []string
-	//var instances []*ec2.Instance
-	//var instances []taggedInstance
-
-	//taggedInstances := make(map[string]*ec2.Instance)
 	var taggedInstances []*ec2.Instance
 
-	//for r, _ := range resp.Reservations {
 	for r := range resp.Reservations {
-		fmt.Println("resp.Reservations:", reflect.TypeOf(resp.Reservations))
-		fmt.Println("len(resp.Reservations)", len(resp.Reservations))
-		fmt.Println("Type of r:", reflect.TypeOf(r))
-		fmt.Println("r:", r)
-		fmt.Println("len(resp.Reservations[r].Instances):", len(resp.Reservations[r].Instances))
 		for _, inst := range resp.Reservations[r].Instances {
 
 			if inst != nil {
-
-				fmt.Println("inst:", reflect.TypeOf(inst))
-				////fmt.Println("Instance Id: ", *inst.InstanceId)
-				//fmt.Println("*inst.InstanceId:", *inst.InstanceId)
-				//fmt.Println("inst.InstanceId:", reflect.TypeOf(*inst.InstanceId))
-				////fmt.Println("len(inst):", len(inst))
-
-				//instances = append(instances, *inst.InstanceId)
-				/*
-					if *inst.InstanceId != nil {
-						fmt.Println("*inst.InstanceId had positive value")
-						instances = append(instances, inst)
-						instance := inst
-					}
-				*/
-				//ti := taggedInstance{instanceId: *inst.InstanceId, instance: inst}
-				////instances = append(instances, inst)
-				//instances = append(instances, ti)
-
+				//fmt.Println("inst:", reflect.TypeOf(inst))
 				//instance := inst
-				fmt.Println("-----------------------------------------------------------------------------------------")
-				fmt.Println("*inst.InstanceId:", reflect.TypeOf(*inst.InstanceId))
-				fmt.Println(*inst.InstanceId)
-				//fmt.Println(inst)
-				fmt.Println("-----------------------------------------------------------------------------------------")
-				//fmt.Println("type of instance:", reflect.TypeOf(instance))
-				//fmt.Println("len(instances)", len(instances))
-
-				//taggedInstances[*inst.InstanceId] = inst
+				//_ = instance
 				taggedInstances = append(taggedInstances, inst)
 			}
 		}
 	}
-	//instances := "test"
-	//return instances
 	return taggedInstances
 }
+
+// !-getTaggedInstances()
 
 // BlockDevice containes all fields necessary
 // to take a snapshot
