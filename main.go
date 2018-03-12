@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // General refs
@@ -76,7 +79,7 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 	for _, bd := range instance.BlockDeviceMappings {
 		if bd.Ebs != nil {
 			instanceBlockDevices[*bd.Ebs.VolumeId] = bd
-			fmt.Println("bd:", bd)
+			//fmt.Println("bd:", bd)
 		}
 	}
 
@@ -87,7 +90,7 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 	volIDs := make([]*string, 0, len(instanceBlockDevices))
 	for volID := range instanceBlockDevices {
 		volIDs = append(volIDs, aws.String(volID))
-		fmt.Println("volID:", volID)
+		//fmt.Println("volID:", volID)
 	}
 
 	// Call DescribeVolumes to get vol size
@@ -105,7 +108,7 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 		bd["volume_id"] = *vol.VolumeId
 
 		if instanceBd.Ebs != nil && instanceBd.Ebs.DeleteOnTermination != nil {
-			bd["delete_on_terminaiton"] = *instanceBd.Ebs.DeleteOnTermination
+			bd["delete_on_termination"] = *instanceBd.Ebs.DeleteOnTermination
 		}
 		if vol.Size != nil {
 			bd["volume_size"] = *vol.Size
@@ -117,9 +120,9 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 			bd["iops"] = *vol.Iops
 		}
 		if blockDeviceIsRoot(instanceBd, instance) {
-			//blockDevices["root"] = bd
 			blockDevices["root"] = bd
 		} else {
+
 			if instanceBd.DeviceName != nil {
 				bd["device_name"] = *instanceBd.DeviceName
 			}
@@ -153,12 +156,43 @@ func main() {
 	// instances is a pointer to a slice of string
 	tag := "Test"
 	instances := getTaggedInstances(tag)
-	_ = instances
+	//fmt.Println("Type of instances:", reflect.TypeOf(instances))
 
-	// Needs to run on a single instance
 	for _, i := range instances {
-		fmt.Println("instance id:", *i.InstanceId)
-		readBlockDeviceFromInstance(i)
-	}
+		//fmt.Println("Type of i:", reflect.TypeOf(i))
+		fmt.Println("i.InstanceId:", *i.InstanceId)
 
+		// mitchellh/mapstructure
+		fmt.Println("--------------------")
+		var ec2Instance *ec2.Instance
+		err := mapstructure.Decode(i, &ec2Instance)
+		if err != nil {
+			panic(err)
+		}
+		//fmt.Printf("ec2Instance.Decode: %v\n", ec2Instance)
+		fmt.Printf("ec2Instance.InstanceId: %v\n", *ec2Instance.InstanceId)
+		//fmt.Printf("ec2Instance.Tags: %v\n", ec2Instance.Tags)
+		fmt.Printf("type of ec2Instance.Tags: %v\n", reflect.TypeOf(ec2Instance.Tags))
+		for _, tag := range ec2Instance.Tags {
+			//fmt.Println("type of tag:", reflect.TypeOf(tag))
+			//fmt.Println("tag:", tag)
+			fmt.Printf("Tag: %v => %v\n", *tag.Key, *tag.Value)
+		}
+
+		//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", *ec2Instance.BlockDeviceMappings)
+		//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", ec2Instance.BlockDeviceMappings)
+		for _, bdm := range ec2Instance.BlockDeviceMappings {
+			//fmt.Println("bdm:", bdm)
+			fmt.Println("bdm.DeviceName:", *bdm.DeviceName)
+			//fmt.Println("bdm.Ebs:", *bdm.Ebs)
+			//fmt.Println("type of bdm.Ebs:", reflect.TypeOf(*bdm.Ebs))
+			fmt.Println("bdm.Ebs.VolumeId:", *bdm.Ebs.VolumeId)
+			//fmt.Println("bdm.Ebs.Tags:", *bdm.Ebs.Tags)
+
+		}
+
+		//fmt.Println("Type of bdevs:", reflect.TypeOf(bdevs))
+		fmt.Println("--------------------")
+
+	}
 } //!-main
