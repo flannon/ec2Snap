@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -148,6 +147,11 @@ func blockDeviceIsRoot(bd *ec2.InstanceBlockDeviceMapping, instance *ec2.Instanc
 		*bd.DeviceName == *instance.RootDeviceName
 } // !-blockDeviceIsRoot()
 
+//
+type InstanceBlockDevice struct {
+	BlockDeviceMappings []*ec2.BlockDeviceMapping
+}
+
 //!+main
 func main() {
 
@@ -158,41 +162,61 @@ func main() {
 	instances := getTaggedInstances(tag)
 	//fmt.Println("Type of instances:", reflect.TypeOf(instances))
 
+	// I'm ranging over instances, but I need to use the instance Id to run
+	// readBlockDeviceFromInstance() and then range over rbdi
 	for _, i := range instances {
 		//fmt.Println("Type of i:", reflect.TypeOf(i))
 		fmt.Println("i.InstanceId:", *i.InstanceId)
 
-		// mitchellh/mapstructure
-		fmt.Println("--------------------")
-		var ec2Instance *ec2.Instance
-		err := mapstructure.Decode(i, &ec2Instance)
+		ibd, _ := readBlockDeviceFromInstance(i)
+		fmt.Printf("Type of ibd: %v\n", reflect.TypeOf(ibd))
+		fmt.Printf("ibd: %v\n", ibd)
+
+		//blockDevices := make(map[string]interface{})
+
+		//var ec2BlockDevice map[string]interface{}
+		var ec2BlockDevice InstanceBlockDevice
+		err := mapstructure.Decode(ibd, ec2BlockDevice)
 		if err != nil {
 			panic(err)
 		}
-		//fmt.Printf("ec2Instance.Decode: %v\n", ec2Instance)
-		fmt.Printf("ec2Instance.InstanceId: %v\n", *ec2Instance.InstanceId)
-		//fmt.Printf("ec2Instance.Tags: %v\n", ec2Instance.Tags)
-		fmt.Printf("type of ec2Instance.Tags: %v\n", reflect.TypeOf(ec2Instance.Tags))
-		for _, tag := range ec2Instance.Tags {
-			//fmt.Println("type of tag:", reflect.TypeOf(tag))
-			//fmt.Println("tag:", tag)
-			fmt.Printf("Tag: %v => %v\n", *tag.Key, *tag.Value)
-		}
 
-		//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", *ec2Instance.BlockDeviceMappings)
-		//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", ec2Instance.BlockDeviceMappings)
-		for _, bdm := range ec2Instance.BlockDeviceMappings {
-			//fmt.Println("bdm:", bdm)
-			fmt.Println("bdm.DeviceName:", *bdm.DeviceName)
-			//fmt.Println("bdm.Ebs:", *bdm.Ebs)
-			//fmt.Println("type of bdm.Ebs:", reflect.TypeOf(*bdm.Ebs))
-			fmt.Println("bdm.Ebs.VolumeId:", *bdm.Ebs.VolumeId)
-			//fmt.Println("bdm.Ebs.Tags:", *bdm.Ebs.Tags)
+		//for k, v := range ibd {
 
-		}
+		//}
 
-		//fmt.Println("Type of bdevs:", reflect.TypeOf(bdevs))
-		fmt.Println("--------------------")
+		/*
+			// mitchellh/mapstructure
+			fmt.Println("--------------------")
+			var ec2Instance *ec2.Instance
+			err := mapstructure.Decode(i, &ec2Instance)
+			if err != nil {
+				panic(err)
+			}
+			//fmt.Printf("ec2Instance.Decode: %v\n", ec2Instance)
+			fmt.Printf("ec2Instance.InstanceId: %v\n", *ec2Instance.InstanceId)
+			//fmt.Printf("ec2Instance.Tags: %v\n", ec2Instance.Tags)
+			fmt.Printf("type of ec2Instance.Tags: %v\n", reflect.TypeOf(ec2Instance.Tags))
+			for _, tag := range ec2Instance.Tags {
+				//fmt.Println("type of tag:", reflect.TypeOf(tag))
+				//fmt.Println("tag:", tag)
+				fmt.Printf("Tag: %v => %v\n", *tag.Key, *tag.Value)
+			}
 
-	}
+			//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", *ec2Instance.BlockDeviceMappings)
+			//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", ec2Instance.BlockDeviceMappings)
+			for _, bdm := range ec2Instance.BlockDeviceMappings {
+				//fmt.Println("bdm:", bdm)
+				fmt.Println("bdm.DeviceName:", *bdm.DeviceName)
+				//fmt.Println("bdm.Ebs:", *bdm.Ebs)
+				//fmt.Println("type of bdm.Ebs:", reflect.TypeOf(*bdm.Ebs))
+				fmt.Println("bdm.Ebs.VolumeId:", *bdm.Ebs.VolumeId)
+				//fmt.Println("bdm.Ebs.Tags:", *bdm.Ebs.Tags)
+
+			}
+
+			//fmt.Println("Type of bdevs:", reflect.TypeOf(bdevs))
+			fmt.Println("--------------------")
+		*/
+	} //!-for
 } //!-main
