@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/mitchellh/mapstructure"
 )
 
 // General refs
@@ -78,7 +77,8 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 	for _, bd := range instance.BlockDeviceMappings {
 		if bd.Ebs != nil {
 			instanceBlockDevices[*bd.Ebs.VolumeId] = bd
-			//fmt.Println("bd:", bd)
+			fmt.Println("bd:", bd)
+			fmt.Println("Type of bd:", reflect.TypeOf(bd))
 		}
 	}
 
@@ -96,14 +96,18 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 	volResp, err := svc.DescribeVolumes(&ec2.DescribeVolumesInput{
 		VolumeIds: volIDs,
 	})
+	fmt.Printf("volResp: %v\n", volResp)
+	fmt.Printf("Type of volResp: %v\n", reflect.TypeOf(volResp))
 	if err != nil {
 		return nil, err
 	}
 
 	for _, vol := range volResp.Volumes {
 		instanceBd := instanceBlockDevices[*vol.VolumeId]
+		fmt.Println("Type of instanceBd:", reflect.TypeOf(instanceBd))
 		bd := make(map[string]interface{})
 
+		// this is where the DescribeSnapshotVolume (bd) struct starts
 		bd["volume_id"] = *vol.VolumeId
 
 		if instanceBd.Ebs != nil && instanceBd.Ebs.DeleteOnTermination != nil {
@@ -160,26 +164,23 @@ func main() {
 	// instances is a pointer to a slice of string
 	tag := "Test"
 	instances := getTaggedInstances(tag)
-	//fmt.Println("Type of instances:", reflect.TypeOf(instances))
+	fmt.Println("Type of instances:", reflect.TypeOf(instances))
 
 	// I'm ranging over instances, but I need to use the instance Id to run
 	// readBlockDeviceFromInstance() and then range over rbdi
 	for _, i := range instances {
-		//fmt.Println("Type of i:", reflect.TypeOf(i))
+		fmt.Println("Type of i:", reflect.TypeOf(i))
 		fmt.Println("i.InstanceId:", *i.InstanceId)
 
 		ibd, _ := readBlockDeviceFromInstance(i)
 		fmt.Printf("Type of ibd: %v\n", reflect.TypeOf(ibd))
 		fmt.Printf("ibd: %v\n", ibd)
 
-		//blockDevices := make(map[string]interface{})
-
-		//var ec2BlockDevice map[string]interface{}
-		var ec2BlockDevice InstanceBlockDevice
-		err := mapstructure.Decode(ibd, ec2BlockDevice)
-		if err != nil {
-			panic(err)
-		}
+		//var ec2BlockDevice InstanceBlockDevice
+		//err := mapstructure.Decode(ibd, ec2BlockDevice)
+		//if err != nil {
+		//	panic(err)
+		//}
 
 		//for k, v := range ibd {
 
