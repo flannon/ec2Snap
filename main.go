@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/mitchellh/mapstructure"
 )
 
 // General refs
@@ -68,6 +67,7 @@ func getTaggedInstances(t string) []*ec2.Instance {
 
 // Get block devices from instance
 //!+readBlockDeviceFromInstance()
+//func readBlockDeviceFromInstance(instance *ec2.Instance) {
 func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}, error) {
 
 	blockDevices := make(map[string]interface{})
@@ -78,7 +78,7 @@ func readBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}
 	for _, bd := range instance.BlockDeviceMappings {
 		if bd.Ebs != nil {
 			instanceBlockDevices[*bd.Ebs.VolumeId] = bd
-			//fmt.Println("bd:", bd)
+			fmt.Println("bd:", bd)
 			fmt.Println("Type of bd:", reflect.TypeOf(bd))
 		}
 	}
@@ -183,27 +183,36 @@ type InstanceBlockDevice struct {
 //	Encrypted           bool
 //}
 
-type snapshotBlockDevice struct {
-	volume_type           string
-	iops                  int64
-	device_name           string
-	encrypted             bool
-	snapshot_id           string
-	volume_id             string
-	delete_on_termination bool
-	volume_size           int64
-}
-type InstanceSnapshotBlockDevice struct {
-	snapshotBlockDevice `mapstructure:",squash"`
-	root                string
+//type SnapshotBlockDevice struct {
+//	volume_type           string
+//	iops                  int64
+//	device_name           string
+//	encrypted             bool
+//	snapshot_id           string
+//	volume_id             string
+//	delete_on_termination bool
+//	volume_size           int64
+//}
+type SnapshotBlockDevice struct {
+	Volume_size           int64
+	Volume_type           string
+	Iops                  int64
+	Device_name           string
+	Encrypted             bool
+	Snapshot_id           string
+	Volume_id             string
+	Delete_on_termination bool
 }
 
-// wrapper for mapstructdecode
-//func CreateFromMap(m map[string]interface{}) (*ec2.InstanceBlockDeviceMapping, error) {
-//	var result *ec2.InstanceBlockDeviceMapping
-//	err := mapstructure.Decode(m, &result)
-//	return result, err
+//type InstanceSnapshotBlockDevice struct {
+//	snapshotBlockDevice `mapstructure:",squash"`
+//	root                string
 //}
+
+type InstanceSnapshotBlockDevice struct {
+	SnapshotBlockDevice `mapstructure:",squash"`
+	Root                string
+}
 
 //!+main
 func main() {
@@ -214,94 +223,68 @@ func main() {
 	// instances is a pointer to a slice of string
 	tag := "Test"
 	instances := getTaggedInstances(tag)
-	fmt.Println("Type of instances:", reflect.TypeOf(instances))
+	//fmt.Println("Type of instances:", reflect.TypeOf(instances))
 
-	// I'm ranging over instances, but I need to use the instance Id to run
-	// readBlockDeviceFromInstance() and then range over rbdi
 	for _, i := range instances {
 		fmt.Println("Type of i:", reflect.TypeOf(i))
 		fmt.Println("i.InstanceId:", *i.InstanceId)
 		fmt.Println("-----------------------------------------------------------")
 
-		////
+		//readBlockDeviceFromInstance(i)
+
+		//ibd, _ := readBlockDeviceFromInstance(i)
 		ibd, _ := readBlockDeviceFromInstance(i)
-		fmt.Println("-----------------------------------------------------------")
-		fmt.Printf("ibd: %v\n", ibd)
-		fmt.Println("-----------------------------------------------------------")
-		fmt.Printf("Type of ibd: %v\n", reflect.TypeOf(ibd))
-
-		for k, v := range ibd {
-			fmt.Println("============")
-			fmt.Printf("Key: %v, Value: %v\n", k, v)
-			fmt.Printf("Tyep of value: %v\n", reflect.TypeOf(v))
-		}
-		//res, err := CreateFromMap(ibd)
-		//if err != nil {
-		//	//panic(err)
-		//	fmt.Println(err)
-		//	return
-		//}
-		//fmt.Printf("%+v\n", res)
-
-		//var ec2SnapshotBlockDevice *ec2.InstanceBlockDeviceMapping
-		//var ec2SnapshotBlockDevice *InstanceSnapshotBlockDevice
-		var result *InstanceSnapshotBlockDevice
-		err := mapstructure.Decode(ibd, &result)
-		if err != nil {
-			//panic(err)
-			fmt.Println(err)
-			return
-		}
-		fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-		//fmt.Printf("%+v\n", ec2SnapshotBlockDevice)
-		fmt.Printf("%+v\n", ibd)
-		////fmt.Printf("ec2SnapshotBlockDevice: %v\n", *ec2SnapshotBlockDevice)
-		////fmt.Printf("Type of ec2SnapshotBlockDevice: %v\n", reflect.TypeOf(ec2SnapshotBlockDevice))
-		fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-		////
-
-		//var ec2BlockDevice InstanceBlockDevice
-		//err := mapstructure.Decode(ibd, ec2BlockDevice)
-		//if err != nil {
-		//	panic(err)
-		//}
-
-		//for k, v := range ibd {
-
-		//}
+		_ = ibd
 
 		/*
-			// mitchellh/mapstructure
-			fmt.Println("--------------------")
-			var ec2Instance *ec2.Instance
-			err := mapstructure.Decode(i, &ec2Instance)
-			if err != nil {
-				panic(err)
-			}
-			//fmt.Printf("ec2Instance.Decode: %v\n", ec2Instance)
-			fmt.Printf("ec2Instance.InstanceId: %v\n", *ec2Instance.InstanceId)
-			//fmt.Printf("ec2Instance.Tags: %v\n", ec2Instance.Tags)
-			fmt.Printf("type of ec2Instance.Tags: %v\n", reflect.TypeOf(ec2Instance.Tags))
-			for _, tag := range ec2Instance.Tags {
-				//fmt.Println("type of tag:", reflect.TypeOf(tag))
-				//fmt.Println("tag:", tag)
-				fmt.Printf("Tag: %v => %v\n", *tag.Key, *tag.Value)
-			}
+			fmt.Println("-----------------------------------------------------------")
+			fmt.Printf("ibd: %v\n", ibd)
+			fmt.Println("-----------------------------------------------------------")
+			fmt.Printf("Type of ibd: %v\n", reflect.TypeOf(ibd))
 
-				//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", *ec2Instance.BlockDeviceMappings)
-				//fmt.Printf("ec2Instance.BlockDeviceMappings: %v\n", ec2Instance.BlockDeviceMappings)
-				for _, bdm := range ec2Instance.BlockDeviceMappings {
-					//fmt.Println("bdm:", bdm)
-					fmt.Println("bdm.DeviceName:", *bdm.DeviceName)
-					//fmt.Println("bdm.Ebs:", *bdm.Ebs)
-					//fmt.Println("type of bdm.Ebs:", reflect.TypeOf(*bdm.Ebs))
-					fmt.Println("bdm.Ebs.VolumeId:", *bdm.Ebs.VolumeId)
-					//fmt.Println("bdm.Ebs.Tags:", *bdm.Ebs.Tags)
+			for k, v := range ibd {
+				// v is a slice of map[string]interface {}
+				// so first we have to split the slice
+				// then dig the map values out.
+				fmt.Println("============")
+				if k == "ebs" {
+					fmt.Printf("Key: %v, Value: %v\n", k, v)
+					fmt.Printf("Type of value: %v\n", reflect.TypeOf(v))
+					fmt.Printf("Type of value.kind: %v\n", reflect.TypeOf(v).Kind())
+					fmt.Printf("Value of value: %v\n", reflect.ValueOf(v))
 
+					switch reflect.TypeOf(v).Kind() {
+					case reflect.Slice:
+						s := reflect.ValueOf(v)
+
+						for i := 0; i < s.Len(); i++ {
+							fmt.Println(s.Index(i))
+							fmt.Println("s.Index.(i).Kind()", s.Index(i).Kind())
+							fmt.Println("s.Index.(i).Interface()", s.Index(i).Interface())
+							mi := s.Index(i).Interface()
+							fmt.Printf("mi: %+v\n", mi)
+							fmt.Printf("Type of mi: %+v\n", reflect.TypeOf(mi))
+
+							//var result Ec2ebs
+							var result SnapshotBlockDevice
+
+							if err := mapstructure.Decode(mi, &result); err != nil {
+								panic(err)
+							}
+							fmt.Printf("%+v\n", result)
+							fmt.Printf("result.Volume_size: %v\n", result.Volume_size)
+							fmt.Printf("result.Volume_type: %v\n", result.Volume_type)
+							fmt.Printf("result.Iops: %v\n", result.Iops)
+							fmt.Printf("result.Device_name: %v\n", result.Device_name)
+							fmt.Printf("result.Encrypted: %v\n", result.Encrypted)
+							fmt.Printf("result.Snapshot_id: %v\n", result.Snapshot_id)
+							fmt.Printf("result.Volume_id: %v\n", result.Volume_id)
+							fmt.Printf("result.Delete_on_termination: %v\n", result.Delete_on_termination)
+						}
+
+					}
 				}
-
-				//fmt.Println("Type of bdevs:", reflect.TypeOf(bdevs))
-				fmt.Println("--------------------")
+			}
 		*/
 	} //!-for
 } //!-main
