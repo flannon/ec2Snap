@@ -13,8 +13,9 @@ import (
 )
 
 // General refs
-//   https://doco//s.aws.amazon.com/sdk-for-go/api/service/ec2/#EC2.DescribeInstanceAttribute
+//   https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#EC2.DescribeInstanceAttribute
 //   https://github.com/terraform-providers/terraform-provider-aws/blob/master/aws/resource_aws_instance.go
+//	 https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#EC2.DescribeVolumes
 
 var svc *ec2.EC2
 
