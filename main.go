@@ -25,7 +25,9 @@ import (
 
 var svc *ec2.EC2
 
-func service() *ec2.EC2 {
+// Make the ec2 service connection using
+// environment variables to get auth tokens
+func ec2Service() *ec2.EC2 {
 
 	os.Setenv("AWS_SDK_LOAD_CONFIG", "true")
 	os.Setenv("AWS_PROFILE", "default")
@@ -173,11 +175,6 @@ func blockDeviceIsRoot(bd *ec2.InstanceBlockDeviceMapping, instance *ec2.Instanc
 		*bd.DeviceName == *instance.RootDeviceName
 } // !-blockDeviceIsRoot()
 
-// InstanceBlockDevice struct
-//type InstanceBlockDevice struct {
-//	BlockDeviceMappings []*ec2.BlockDeviceMapping
-//}
-
 // SnapshotBlockDevice contains all block device attributes
 type SnapshotBlockDevice struct {
 	VolumeId            string
@@ -190,23 +187,24 @@ type SnapshotBlockDevice struct {
 	SnapshotId          string
 }
 
-func getInstanceVolumes(bd map[string]interface{}, t string) []string { //!+
-	volIds := make([]string, 1)
-	for k, v := range bd {
+// instanceVolumeIdsByTag returns volume ids for all volumes
+// attached to a tagged instance.
+func instanceVolumeIdsByTag(bd map[string]interface{}, t string) []string { //!+
+	var volumeIds []string
+	for dev, m := range bd {
 		// v is a slice of map[string]interface {}
 		// so first we have to split the slice
 		// then dig the map values out.
-		fmt.Println("============")
-		if k == "ebs" {
+		//fmt.Println("============")
+		if dev == "ebs" {
 			//fmt.Printf("Key: %v, Value: %v\n", k, v)
 			//fmt.Printf("Type of value: %v\n", reflect.TypeOf(v))
 			//fmt.Printf("Type of value.kind: %v\n", reflect.TypeOf(v).Kind())
 			//fmt.Printf("Value of value: %v\n", reflect.ValueOf(v))
 
-			switch reflect.TypeOf(v).Kind() {
+			switch reflect.TypeOf(m).Kind() {
 			case reflect.Slice:
-				s := reflect.ValueOf(v)
-
+				s := reflect.ValueOf(m)
 				for i := 0; i < s.Len(); i++ {
 					//fmt.Println(s.Index(i))
 					//fmt.Println("s.Index.(i).Kind()", s.Index(i).Kind())
@@ -230,25 +228,23 @@ func getInstanceVolumes(bd map[string]interface{}, t string) []string { //!+
 					//fmt.Printf("result.Encrypted: %v\n", result.Encrypted)
 					//fmt.Printf("result.SnapshotId: %v\n", result.SnapshotId)
 
-					volIds = append(volIds, result.VolumeId)
-					//describeInstanceVolume(result.VolumeId, t)
+					volumeIds = append(volumeIds, result.VolumeId)
 				}
 			}
 		} //
 	} // for bd !-
-	return volIds
+	return volumeIds
 } // !- getSnapshotVolumes()
 
-type SnapshotVolume struct {
-	volumeId    string
-	snapshotId  string
-	snapshotTag string
+type SnapshotVolumeInfo struct {
+	name string
+	id   string
+	//snapshotId  string
 }
 
-func describeSnapshotVolumes(id string, t string) []string {
-	snapshotIds := make([]string, 2)
+func describeSnapshotVolumes(id string, t string) []SnapshotVolumeInfo {
+	var snapshotVolumes []SnapshotVolumeInfo
 
-	//fmt.Println("id:", id)
 	input := &ec2.DescribeVolumesInput{
 		Filters: []*ec2.Filter{
 			{
@@ -264,7 +260,6 @@ func describeSnapshotVolumes(id string, t string) []string {
 			},
 		},
 	}
-
 	result, err := svc.DescribeVolumes(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
@@ -277,28 +272,25 @@ func describeSnapshotVolumes(id string, t string) []string {
 			// and Message from an error.
 			fmt.Println(err.Error())
 		}
-		return snapshotIds
+		//return volumeIds
+		return snapshotVolumes
 	}
 	if result.Volumes != nil {
-		//fmt.Printf("Type of result %v\n", reflect.TypeOf(result))
-		////fmt.Println(result.Volumes)
-		//fmt.Println("id:", id)
-
 		var snapshotVolumeOutput *ec2.DescribeVolumesOutput
 		if err := mapstructure.Decode(result, &snapshotVolumeOutput); err != nil {
 			panic(err)
 		}
-		//fmt.Printf("sv %v\n", sv)
-		//fmt.Printf("snapshotVolumeOutput.Volumes %v\n", snapshotVolumeOutput.Volumes)
-		//fmt.Printf("type of snapshotVolumeOutput.Volumes %v\n", reflect.TypeOf(snapshotVolumeOutput.Volumes))
-
 		var snapVol []*ec2.Volume
 		if err := mapstructure.Decode(snapshotVolumeOutput.Volumes, &snapVol); err != nil {
-			//panic(err)
-			fmt.Println(err)
+			panic(err)
+			//fmt.Println(err)
 		}
-		//fmt.Printf("sv: %v\n", snapVol)
-		//fmt.Printf("type of sv: %v\n", reflect.TypeOf(snapVol))
+		// Fill the struct type snapshotVolume (?) with
+		// instance id (?)
+		// volume id
+		// Name tag
+		// lookup tag (t)
+		//
 		for _, v := range snapVol {
 			//fmt.Println("v:", v)
 			//fmt.Println("v.Attachments:", v.Attachments)
@@ -315,44 +307,134 @@ func describeSnapshotVolumes(id string, t string) []string {
 			//fmt.Println("type of v.Tags:", reflect.TypeOf(v.Tags))
 			//fmt.Println("len(v.Tags):", len(v.Tags))
 			//fmt.Println("v.Tags[1]:", v.Tags[0])
-			// Process all the tags and find the one we're looking for
+
+			var n string
+			// Process all the tags and and select 'Name' and t (the tag value
+			// passed into the function)
+			// Properly tagged volumes have both a Name tag and a search tag
+			// if search tag matches and no name tag is present log the volume id as
+			// an exception
 			for _, vTag := range v.Tags {
-				//fmt.Printf("t: %v\n", vTag)
+				if *vTag.Key == "Name" {
+					//fmt.Println("We have a winner")
+					//fmt.Printf("Name.Key: %v\n", *vTag.Key)
+					//fmt.Printf("Name.Value: %v\n", *vTag.Value)
+					//fmt.Println("Name.VolumeId:", *v.VolumeId)
+					//volumeIds = append(volumeIds, *v.VolumeId)
+					n = *vTag.Value
+					//fmt.Println("type of n:", reflect.TypeOf(n))
+					//fmt.Printf("n: %v\n", n)
+				}
 				if *vTag.Key == t {
-					fmt.Println("We have a winner")
-					fmt.Printf("t.Key: %v\n", *vTag.Key)
-					fmt.Printf("t.Value: %v\n", *vTag.Value)
-					fmt.Println("v.VolumeId:", *v.VolumeId)
-					snapshotIds = append(snapshotIds, *v.VolumeId)
+					//fmt.Println("We have a winner")
+					//fmt.Printf("t.Key: %v\n", *vTag.Key)
+					//fmt.Printf("t.Value: %v\n", *vTag.Value)
+					//fmt.Println("v.VolumeId:", *v.VolumeId)
+
+					// add name and violue id to the SnapshotVolume struct
+					if n != "" {
+						id := *v.VolumeId
+						//fmt.Printf("n: %v\n", n)
+						//fmt.Printf("id: %v\n", id)
+						sv := SnapshotVolumeInfo{name: n, id: id}
+						//fmt.Println(sv)
+						snapshotVolumes = append(snapshotVolumes, sv)
+						//for _, v := range snapshotVolumes {
+						//	fmt.Println(v.nameTag)
+						//	fmt.Println(v.volumeId)
+						//}
+					} else {
+						fmt.Printf("Log the execption: %v has no Name tag\n", id)
+					}
 				}
 			}
-
-			//fmt.Println("v.VolumeType:", *v.VolumeType)
-			//fmt.Println("type of v:", reflect.TypeOf(v))
 		}
 	}
-	return snapshotIds
+	return snapshotVolumes
+}
+
+// TagMap is a map of AWS tag key/values
+type TagMap map[string]string
+
+// ToEc2Tags converts a TagMap to a slice of
+func ToEc2Tags(m *TagMap) []*ec2.Tag {
+	var result []*ec2.Tag
+	for k, v := range *m {
+		result = append(result, &ec2.Tag{Key: aws.String(k), Value: aws.String(v)})
+	}
+	return result
+}
+
+// mkSnapshot() takes takes a SnapshotVolume and
+// makes a snapshot of the volume id, applying the name
+// as the Name tag value
+func mkSnapshot(svc *ec2.EC2, v SnapshotVolumeInfo, d string, t []*ec2.Tag, dr bool) {
+	//fmt.Printf("id: %v\n", id)
+
+	//fmt.Printf("name: %v\n", v.name)
+	//fmt.Printf("id: %v\n", v.id)
+	//fmt.Printf("d: %v\n", d)
+
+	s := &ec2.CreateSnapshotInput{
+		Description: aws.String(d),
+		VolumeId:    aws.String(v.id),
+		TagSpecifications: []*ec2.TagSpecification{
+			{
+				ResourceType: aws.String(ec2.ResourceTypeSnapshot),
+				//Tags: []*ec2.Tag{
+				//	{
+				//		Key:   aws.String("Name"),
+				//		Value: aws.String(v.name),
+				//	},
+				//}, // !-Tags
+				Tags: t,
+			},
+		},
+		DryRun: aws.Bool(dr),
+	}
+	result, err := svc.CreateSnapshot(s)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			default:
+				fmt.Println(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			fmt.Println(err.Error())
+		}
+		return
+	}
+	fmt.Println(result)
 }
 
 //!+main
 func main() {
 
-	service()
-	instanceTagKey := "Test"
-	//snapshotTagName := "say_hello_to_my_little_snapshot"
-	instances := getTaggedInstances(instanceTagKey)
+	searchTag := "Test"
+	description := "Manufactured by MakeSnapshotWorker"
+	dr := true
+	stm := make(TagMap)
+
+	svc := ec2Service()
+
+	instances := getTaggedInstances(searchTag)
 
 	for _, i := range instances {
 		ibd, _ := getBlockDeviceFromInstance(i)
 
-		//vids := getSnapshotVolumes(ibd, instanceTagKey)
-		vids := getInstanceVolumes(ibd, instanceTagKey)
-		for _, j := range vids {
-			// describeSnapshotVolumes is where the heavy lifting happens
-			// it needs to retrun all the information needed to snapshot each volume
-			//sids := describeSnapshotVolumes(j, instanceTagKey)
-			describeSnapshotVolumes(j, instanceTagKey)
+		vids := instanceVolumeIdsByTag(ibd, searchTag)
+		for _, id := range vids {
+			snapVols := describeSnapshotVolumes(id, searchTag)
+			for _, v := range snapVols {
+				stm["Name"] = v.name
+				//fmt.Println("stm[Name]:", stm["Name"])
+				t := ToEc2Tags(&stm)
+				//fmt.Println("type of t", reflect.TypeOf(t))
+				//fmt.Println("type of v:", reflect.TypeOf(v))
+				mkSnapshot(svc, v, description, t, dr)
+			}
 		}
-
 	} //!-for
 } //!-main
