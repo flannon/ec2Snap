@@ -77,7 +77,7 @@ func getTaggedInstances(t string) []*ec2.Instance {
 } // !-getTaggedInstances()
 
 // Get block devices from instance
-func getBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{}, error) {
+func describeSnapshotBlockDevice(instance *ec2.Instance) (map[string]interface{}, error) {
 
 	blockDevices := make(map[string]interface{})
 	blockDevices["ebs"] = make([]map[string]interface{}, 0)
@@ -145,7 +145,7 @@ func getBlockDeviceFromInstance(instance *ec2.Instance) (map[string]interface{},
 
 	return blockDevices, nil
 
-} //!- getBlockDeviceFromInstance()
+} //!- describeSnapshotBlockDevice()
 
 //!+blockDeviceIsRoot()
 func blockDeviceIsRoot(bd *ec2.InstanceBlockDeviceMapping, instance *ec2.Instance) bool {
@@ -194,7 +194,7 @@ func instanceVolumeIdsByTag(bd map[string]interface{}, t string) []string { //!+
 					//fmt.Printf("result.VolumeSize: %v\n", result.VolumeSize)
 					//fmt.Printf("result.VolumeType: %v\n", result.VolumeType)
 					//fmt.Printf("result.Iops: %v\n", result.Iops)
-					//fmt.Printf("result.DeviceName: %v\n", result.DeviceName)
+					fmt.Printf("result.DeviceName: %v\n", result.DeviceName)
 					//fmt.Printf("result.Encrypted: %v\n", result.Encrypted)
 					//fmt.Printf("result.SnapshotId: %v\n", result.SnapshotId)
 
@@ -371,6 +371,7 @@ func mkSnapshot(svc *ec2.EC2, v SnapshotVolumeInfo, d string, t []*ec2.Tag, dr b
 //!+main
 func main() {
 
+	fmt.Println("This is a test")
 	searchTag := "Test"
 	description := "Manufactured by MakeSnapshotWorker"
 	dr := true
@@ -381,7 +382,7 @@ func main() {
 	instances := getTaggedInstances(searchTag)
 
 	for _, i := range instances {
-		ibd, _ := getBlockDeviceFromInstance(i)
+		ibd, _ := describeSnapshotBlockDevice(i)
 
 		vids := instanceVolumeIdsByTag(ibd, searchTag)
 		for _, id := range vids {
