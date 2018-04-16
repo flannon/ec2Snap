@@ -51,7 +51,7 @@ func getTaggedInstances(t string) []*ec2.Instance {
 			{
 				Name: aws.String("tag:" + t),
 				Values: []*string{
-					aws.String("daily"), aws.String("weekly"), aws.String("monthly")},
+					aws.String("daily"), aws.String("/dev/sda"), aws.String("monthly")},
 			},
 		},
 	}
@@ -168,8 +168,8 @@ type SnapshotBlockDevice struct {
 
 // instanceVolumeIdsByTag returns volume ids for all volumes
 // attached to a tagged instance.
-func instanceVolumeIdsByTag(bd map[string]interface{}, t string) []string { //!+
-	var volumeIds []string
+func instanceVolumeIdsByTag(bd map[string]interface{}, t string) map[string]string { //!+
+	devIds := make(map[string]string)
 	for dev, m := range bd {
 		// v is a slice of map[string]interface {}
 		// so first we have to split the slice
@@ -194,16 +194,17 @@ func instanceVolumeIdsByTag(bd map[string]interface{}, t string) []string { //!+
 					//fmt.Printf("result.VolumeSize: %v\n", result.VolumeSize)
 					//fmt.Printf("result.VolumeType: %v\n", result.VolumeType)
 					//fmt.Printf("result.Iops: %v\n", result.Iops)
-					fmt.Printf("result.DeviceName: %v\n", result.DeviceName)
+					//fmt.Printf("result.DeviceName: %v\n", result.DeviceName)
 					//fmt.Printf("result.Encrypted: %v\n", result.Encrypted)
 					//fmt.Printf("result.SnapshotId: %v\n", result.SnapshotId)
 
-					volumeIds = append(volumeIds, result.VolumeId)
+					devIds[result.VolumeId] = result.DeviceName
+					//volumeIds = append(volumeIds, result.VolumeId)
 				}
 			}
 		} //
 	} // for bd !-
-	return volumeIds
+	return devIds
 } // !- getSnapshotVolumes()
 
 type SnapshotVolumeInfo struct {
@@ -299,7 +300,7 @@ func describeSnapshotVolumes(id string, t string) []SnapshotVolumeInfo {
 						snapshotVolumes = append(snapshotVolumes, sv)
 
 					} else {
-						fmt.Printf("Log the exception: %v has no Name tag\n", id)
+						fmt.Printf("%v has no Name tag. Moving on...\n", id)
 					}
 				}
 			}
@@ -384,17 +385,34 @@ func main() {
 	for _, i := range instances {
 		ibd, _ := describeSnapshotBlockDevice(i)
 
-		vids := instanceVolumeIdsByTag(ibd, searchTag)
-		for _, id := range vids {
+		devIds := instanceVolumeIdsByTag(ibd, searchTag)
+		for id, dev := range devIds {
+			_ = dev
+			// print volume id and device name
+			//fmt.Printf("%v: %v\n", id, dev)
+			//fmt.Printf("device_name: %v\n", dev)
 			snapVols := describeSnapshotVolumes(id, searchTag)
 			for _, v := range snapVols {
 				stm["Name"] = v.name
 				//fmt.Println("stm[Name]:", stm["Name"])
+				//fmt.Println("stm[Test]:", stm["Test"])
 				t := ToEc2Tags(&stm)
 				//fmt.Println("type of t", reflect.TypeOf(t))
 				//fmt.Println("type of v:", reflect.TypeOf(v))
 				mkSnapshot(svc, v, description, t, dr)
 			}
 		}
+		//}
+		//for _, id := range vids {
+		//	snapVols := describeSnapshotVolumes(id, searchTag)
+		//	for _, v := range snapVols {
+		//		stm["Name"] = v.name
+		//		//fmt.Println("stm[Name]:", stm["Name"])
+		//		t := ToEc2Tags(&stm)
+		//		//fmt.Println("type of t", reflect.TypeOf(t))
+		//		//fmt.Println("type of v:", reflect.TypeOf(v))
+		//		mkSnapshot(svc, v, description, t, dr)
+		//	}
+		//}
 	} //!-for
 } //!-main
